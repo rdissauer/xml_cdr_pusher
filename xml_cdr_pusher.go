@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/xml"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
 	"net/url"
+
+	_ "github.com/lib/pq"
 )
 
 type myHandler struct{}
@@ -52,6 +55,23 @@ func (t *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//log.Println(err)
 	log.Println(*res)
 
+	db, dberr := sql.Open("postgres", "user=test dbname=test password=qakyrGVgyh3Q7ZWwyEgj sslmode=verify-full")
+	if dberr != nil {
+		log.Fatal(dberr)
+	}
+
+	qerr := db.QueryRow(`INSERT INTO xml_cdr (direction, caller_id_name, caller_id_number, called_destination_number, destination_number, context,
+		                                        core_uuid, switchname, start_stamp, answer_stamp, end_stamp, duration, billsec,
+		                                        hangup_cause, hangup_cause_q850, accountcode, read_codec, write_codec, uuid, bleg, json)
+													VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
+		res.Direction, res.CallerIDName, res.CallerIDNumber, res.CalledDestinationNumber, res.DestinationNumber, res.Context,
+		res.CoreUUID, res.Switchname, res.StartStamp, res.AnswerStamp, res.EndStamp, res.Duration, res.Billsec,
+		res.HangupCause, res.HangupCauseQ850, res.Accountcode, res.ReadCodec, res.WriteCodec, res.AlegUUID, res.BlegUUID)
+
+	if qerr != nil {
+		log.Println(err)
+	}
+
 	if err == nil {
 		w.WriteHeader(200)
 		w.Write([]byte("200 - " + http.StatusText(200)))
@@ -62,6 +82,7 @@ func (t *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	http.Handle("/", new(myHandler))
 	http.ListenAndServe(":8080", nil)
 }
