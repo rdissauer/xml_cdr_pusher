@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"log"
 	"net/http"
+	"io/ioutil"
+	"net/url"
 )
 
 type myHandler struct{}
@@ -37,9 +39,15 @@ func (t *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[1:]
 	log.Println(path)
 
-	decoder := xml.NewDecoder(r.Body)
+	body, _ := ioutil.ReadAll(r.Body)
+	decbody, _ := url.QueryUnescape(string(body))
+	//log.Println(decbody)
+
+	//decoder := xml.NewDecoder(r.Body)
 	res := &Result{}
-	err := decoder.Decode(res)
+	//err := decoder.Decode(res)
+
+	err := xml.Unmarshal([]byte(decbody), res)
 
 	//log.Println(err)
 	log.Println(*res)
