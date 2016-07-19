@@ -1,0 +1,39 @@
+---
+Host: localhost
+Database: mydb
+User: myuser
+Password: mypass
+SSL: verify-full
+
+### SSL
+# disable - No SSL
+# require - Always SSL (skip verification)
+# verify-ca - Always SSL (verify that the certificate presented by the server was signed by a trusted CA)
+# verify-full - Always SSL (verify that the certification presented by the server was signed by a trusted CA and the server host name matches the one in the certificate)
+
+### Postgres DB
+# CREATE TABLE xml_cdr (
+#     uuid uuid NOT NULL,
+#     direction text,
+#     caller_id_name text,
+#     caller_id_number text,
+#     called_destination_number text,
+#     destination_number text,
+#     context text,
+#     core_uuid uuid,
+#     switchname text,
+#     start_stamp timestamp without time zone,
+#     answer_stamp timestamp without time zone,
+#     end_stamp timestamp without time zone,
+#     duration numeric,
+#     billsec numeric,
+#     hangup_cause text,
+#     hangup_cause_q850 numeric,
+#     accountcode text,
+#     read_codec text,
+#     write_codec text,
+#     bleg uuid,
+#     json json
+# );
+
+...
