@@ -36,7 +36,6 @@ func getConfig(name string) (*myConfig, error) {
 		return &Config, err
 	}
 	err = yaml.Unmarshal(data, &Config)
-	log.Println(Config)
 	if err != nil {
 		return &Config, err
 	}
@@ -166,5 +165,5 @@ func main() {
 	handler.Config = *config
 
 	http.Handle("/", &handler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe("127.0.0.1:8080", nil)
 }

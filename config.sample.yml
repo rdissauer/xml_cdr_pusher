@@ -35,5 +35,8 @@ SSL: verify-full
 #     bleg uuid,
 #     json json
 # );
+#
+# ALTER TABLE ONLY xml_cdr
+#     ADD CONSTRAINT xml_cdr_pkey PRIMARY KEY (uuid);
 
 ...
