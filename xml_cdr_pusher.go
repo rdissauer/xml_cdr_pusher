@@ -48,10 +48,10 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	type Result struct {
 		XMLName                 xml.Name `xml:"cdr"`
 		Direction               string   `xml:"variables>call_direction"`
-		CallerIDName            string   `xml:"variables>caller_id_name"`
-		CallerIDNumber          string   `xml:"variables>caller_id_number"`
+		CallerIDName            string   `xml:"variables>effective_caller_id_name"`
+		CallerIDNumber          string   `xml:"variables>effective_caller_id_number"`
 		CalledDestinationNumber string   `xml:"callflow>caller_profile>destination_number"`
-		DestinationNumber       string   `xml:"callflow>caller_profile>origination>origination_caller_profile>destination_number"`
+		DestinationNumber       string   `xml:"variables>dialed_extension"` //DestinationNumber       string   `xml:"callflow>caller_profile>origination>origination_caller_profile>destination_number"`
 		Context                 string   `xml:"callflow>caller_profile>context"`
 		CoreUUID                string   `xml:"core-uuid,attr"`
 		Switchname              string   `xml:"switchname,attr"`
