@@ -91,7 +91,7 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var StartStamp, AnswerStamp, EndStamp sql.NullString
+	var StartStamp, AnswerStamp, EndStamp, BlegUUID sql.NullString
 	StartStamp.String, _ = url.QueryUnescape(res.StartStamp)
 	AnswerStamp.String, _ = url.QueryUnescape(res.AnswerStamp)
 	EndStamp.String, _ = url.QueryUnescape(res.EndStamp)
@@ -111,6 +111,12 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		EndStamp.Valid = true
 	}
+	if len(res.BlegUUID) == 0 {
+		BlegUUID.Valid = false
+	} else {
+		BlegUUID.Valid = true
+		BlegUUID.String = res.BlegUUID
+	}
 
 	connstring := "postgres://" + h.Config.User + ":" + h.Config.Password + "@" + h.Config.Host + "/" + h.Config.Database + "?sslmode=" + h.Config.SSL
 	db, dberr := sql.Open("postgres", connstring)
@@ -122,13 +128,13 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	_, qerr := db.Query(`INSERT INTO xml_cdr (direction, caller_id_name, caller_id_number, called_destination_number, destination_number, context,
+	_, qerr := db.Query(`INSERT INTO xml_cdr (uuid, direction, caller_id_name, caller_id_number, called_destination_number, destination_number, context,
 		                                        core_uuid, switchname, start_stamp, answer_stamp, end_stamp, duration, billsec,
-		                                        hangup_cause, hangup_cause_q850, accountcode, read_codec, write_codec, uuid, bleg, json)
+		                                        hangup_cause, hangup_cause_q850, accountcode, read_codec, write_codec, bleg, json)
 													VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
-		res.Direction, res.CallerIDName, res.CallerIDNumber, res.CalledDestinationNumber, res.DestinationNumber, res.Context,
+		res.AlegUUID, res.Direction, res.CallerIDName, res.CallerIDNumber, res.CalledDestinationNumber, res.DestinationNumber, res.Context,
 		res.CoreUUID, res.Switchname, StartStamp, AnswerStamp, EndStamp, res.Duration, res.Billsec,
-		res.HangupCause, res.HangupCauseQ850, res.Accountcode, res.ReadCodec, res.WriteCodec, res.AlegUUID, res.BlegUUID, json.String())
+		res.HangupCause, res.HangupCauseQ850, res.Accountcode, res.ReadCodec, res.WriteCodec, BlegUUID, json.String())
 
 	if qerr != nil {
 		w.WriteHeader(500)
